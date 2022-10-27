@@ -6,11 +6,14 @@ import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import CardActions from "@material-ui/core/CardActions";
-
+import Modal from "./Components/Form";
 import "./App.css";
 
 export default function App() {
   const [pets, setPets] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [editPet, setEditPet] = useState({});
+  const [addOrEditAction, setAddOrEditAction] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -22,6 +25,18 @@ export default function App() {
     fetchData();
   }, []);
 
+  const showEditModal = (pet) => {
+    setShowModal(true);
+    setEditPet(pet);
+    setAddOrEditAction("Edit");
+    console.log("HIII " + editPet.name);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setEditPet({});
+    setAddOrEditAction("");
+  };
   var cardStyle = {
     height: "400px",
     backgroundColor: "#fff7fd",
@@ -34,13 +49,17 @@ export default function App() {
       <Grid container spacing={5} style={{ padding: "70px" }}>
         {pets.map((pet) => (
           <Grid item xs={12} sm={4}>
-            <div key={pet.id} className="pet_item">
+            <div className="pet_item">
               <Card style={cardStyle}>
                 <img className="pet_image" src={pet.image} />
                 <h3>Name: {pet.name}</h3>
                 <h4>Age: {pet.age}</h4>
                 <h4>Category: {pet.category}</h4>
-                <Button variant="contained" color="primary">
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => showEditModal(pet)}
+                >
                   Edit
                 </Button>{" "}
                 &nbsp;
@@ -51,6 +70,12 @@ export default function App() {
             </div>
           </Grid>
         ))}
+        <Modal
+          openModal={showModal}
+          addOrEdit={addOrEditAction}
+          handleEditClose={closeModal}
+          editedRecord = {editPet}
+        />
       </Grid>
     </div>
   );
