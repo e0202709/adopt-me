@@ -4,56 +4,69 @@ import { useForm } from "react-hook-form";
 import { Dialog, DialogTitle, Grid, Button } from "@material-ui/core";
 
 import "./formStyles.css";
+import { useReducer } from "react";
+import axios from "axios";
 
 function ModalForm(props) {
   const { openModal, setOpenModal, addOrEdit, editedRecord, handleEditClose } =
     props;
 
-  const initialFValues = {
-    name: "..",
-    ageRequired: "",
-    age: "month",
-    animalType: "Dog",
-  };
   useEffect(() => {
-    if (editedRecord.length > 0)
-      setValues({
+    if (editedRecord)
+      setValue("record", {
         ...editedRecord,
       });
-  });
+  }, [editedRecord]);
 
   const {
     register,
     handleSubmit,
     watch,
     getValues,
-    setValues,
+    setValue,
     formState: { errors },
-  } = useForm({});
+  } = useForm();
   const onSubmit = (data) => {
     console.log(data);
-  }; // your form submit function which will invoke after successful validation
+    handleTest();
+  };
 
-  console.log(watch("name")); // you can watch individual input by pass the name of the input
+  const modalTitle = addOrEdit === "Add" ? "Add new pet" : "Edit pet";
 
-  const petName = editedRecord.name;
-  console.log("PET NAME IS ", petName);
+  const handleTest = () => {
+    handleEditClose();
+    console.log("get values ", JSON.stringify(getValues()));
+    if (addOrEdit === "Add") {
+      let test = axios
+        .post(`http://student-6.sutdacademytools.net:3001/pets/addpet`, getValues("record"))
+        .then((response) => {
+          console.log(response.data);
+          console.log(response.status);
+          console.log(response.statusText);
+          console.log(response.headers);
+          console.log(response.config);
+          if (response.status === 200) {
+            console.log(test);
+          }
+        })
+        .catch((err) => console.error(err));
+    } else {
+      axios.put(
+        `http://student-6.sutdacademytools.net:3001/pets/${editedRecord.id}`,
+        getValues("record")
+      );
+    }
+  };
 
   return (
-    <Dialog
-      title="Dialog With Custom Width"
-      //   modal={true}
-      open={openModal}
-      // open={this.state.open}
-    >
-      <DialogTitle>Tets</DialogTitle>
+    <Dialog title="Dialog With Custom Width" open={openModal}>
+      <DialogTitle>{modalTitle}</DialogTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Grid container>
           <Grid item xs={12}>
             <input
               placeholder="Pet's Name"
-              defaultValue={"hihi"}
-              {...register("name", { required: true })}
+              {...register("record.name", { required: true })}
             />
             {errors.name && (
               <p className="errorText">* Please enter pet's name</p>
@@ -64,14 +77,14 @@ function ModalForm(props) {
               className="inputAge"
               type="number"
               placeholder="Age"
-              {...register("ageRequired", { required: true })}
+              {...register("record.age", { required: true })}
             />
             {errors.ageRequired && (
               <p className="errorText">* Please enter pet's age</p>
             )}
           </Grid>
           <Grid item xs={8}>
-            <select {...register("age")} className="selectDropDown">
+            <select {...register("record.ageUnit")} className="selectDropDown">
               <option value="month">month(s) old</option>
               <option value="year">year(s) old</option>
             </select>
@@ -80,14 +93,17 @@ function ModalForm(props) {
             Category:
           </Grid>
           <Grid item xs={8}>
-            <select {...register("animalType")} className="selectDropDown">
-              <option value="month">Cat</option>
-              <option value="year">Dog</option>
+            <select
+              {...register("record.animalType")}
+              className="selectDropDown"
+            >
+              <option value="cat">Cat</option>
+              <option value="dog">Dog</option>
             </select>
           </Grid>
         </Grid>
         <input type="submit" style={{ backgroundColor: "#99c2ff" }} />
-        <Button onClick={handleEditClose}>Cancel</Button>
+        <Button>Cancel</Button>
       </form>
     </Dialog>
   );
