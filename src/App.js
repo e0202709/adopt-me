@@ -1,32 +1,57 @@
-import React, { useEffect, userEffect, useState } from "react";
-import Card from "@material-ui/core/Card";
-import Grid from "@material-ui/core/Grid";
-import Button from "@material-ui/core/Button";
+import React, { useEffect, useState } from "react";
 import Modal from "./Components/Form";
+import { Dialog, DialogTitle, DialogContent, DialogActions, DialogContentText, Grid, Button, Card } from "@material-ui/core";
+
 import "./App.css";
+import axios from "axios";
 
 export default function App() {
   const [pets, setPets] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [deleteModal, setDeleteModal] = useState(false);
   const [editPet, setEditPet] = useState({});
+  const [deletePet, setDeletePet] = useState({});
   const [addOrEditAction, setAddOrEditAction] = useState("");
 
+  const fetchData = async () => {
+    const allPets = await fetch("http://student-6.sutdacademytools:3001/pets/list")
+    const res = await allPets.json()
+    const jsonResult = Object.entries(res);
+    setPets(jsonResult);
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      const allPets = await fetch("http://student-6.sutdacademytools.net:3001/pets/list");
-      const res = await allPets.json();
-      const jsonResult = Object.values(res);
-      setPets(jsonResult);
-    };
     fetchData();
   }, []);
 
-  const showEditModal = (pet) => {
+  const showEditModal = (pet, id) => {
     setShowModal(true);
+    pet.id = id;
     setEditPet(pet);
     setAddOrEditAction("Edit");
-    console.log("HIII " + editPet.name);
   };
+
+  const showDeleteModal = (pet, id) => {
+    setDeleteModal(true);
+    pet.id = id;
+    setDeletePet(pet)
+  };
+
+  const handleCloseDeleteModal = () => {
+    setDeleteModal(false).then(() => setDeletePet({}))
+  }
+
+  const handleDeleteModal = () => {
+    const id = deletePet.id
+    setDeleteModal(false);
+    axios.delete(`http://student-6.sutdacademytools:3001/pets/delete/${id}`).then((response) => {
+      if (response.status === 200) {
+        fetchData()
+        setDeletePet({})
+      }
+    })
+      .catch((err) => console.error(err));
+  }
 
   const showAddModal = () => {
     setShowModal(true);
@@ -47,26 +72,28 @@ export default function App() {
     <div className="App" style={{}}>
       <br />
       <h2>Adopt me home today!</h2>
-      <Button onClick={()=>showAddModal()}>ADD </Button>
+      <Button style={{
+        backgroundColor: "#30bfea",
+      }} variant="contained" onClick={() => showAddModal()}>ADD A NEW PET</Button>
 
       <Grid container spacing={5} style={{ padding: "70px" }}>
         {pets.map((pet) => (
           <Grid item xs={12} sm={4}>
             <div className="pet_item">
               <Card style={cardStyle}>
-                <img className="pet_image" src={pet.image} />
-                <h3>Name: {pet.name}</h3>
-                <h4>Age: {pet.age} {pet.ageUnit} </h4>
-                <h4>Category: {pet.category}</h4>
+                <img className="pet_image" src={pet[1].image} />
+                <h3>Name: {pet[1].name}</h3>
+                <h4>Age: {pet[1].age} {pet[1].ageUnit} </h4>
+                <h4>Category: {pet[1].category}</h4>
                 <Button
                   variant="contained"
                   color="primary"
-                  onClick={() => showEditModal(pet)}
+                  onClick={() => showEditModal(pet[1], pet[0])}
                 >
                   Edit
                 </Button>{" "}
                 &nbsp;
-                <Button variant="contained" color="secondary">
+                <Button variant="contained" color="secondary" onClick={() => showDeleteModal(pet[1], pet[0])}>
                   Delete
                 </Button>
               </Card>
@@ -77,9 +104,25 @@ export default function App() {
           openModal={showModal}
           addOrEdit={addOrEditAction}
           handleEditClose={closeModal}
-          editedRecord = {editPet}
+          editedRecord={editPet}
+          getData={fetchData}
         />
       </Grid>
+      <Dialog
+        open={deleteModal}
+        onClose={handleCloseDeleteModal}
+      >
+        <DialogTitle>{`Delete ${deletePet.name}`}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-slide-description">
+            Are you sure you want to delete {deletePet.name}?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteModal}>Yes</Button>
+          <Button onClick={handleCloseDeleteModal}>No</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }
