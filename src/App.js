@@ -14,7 +14,7 @@ export default function App() {
   const [addOrEditAction, setAddOrEditAction] = useState("");
 
   const fetchData = async () => {
-    const allPets = await fetch("http://student-6.sutdacademytools:3001/pets/list")
+    const allPets = await fetch("http://student-6.sutdacademytools.net:3001/pets/list")
     const res = await allPets.json()
     const jsonResult = Object.entries(res);
     setPets(jsonResult);
@@ -44,7 +44,7 @@ export default function App() {
   const handleDeleteModal = () => {
     const id = deletePet.id
     setDeleteModal(false);
-    axios.delete(`http://student-6.sutdacademytools:3001/pets/delete/${id}`).then((response) => {
+    axios.delete(`http://student-6.sutdacademytools.net:3001/pets/delete/${id}`).then((response) => {
       if (response.status === 200) {
         fetchData()
         setDeletePet({})
