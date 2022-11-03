@@ -15,12 +15,10 @@ export default function App() {
 
 
   const fetchData = () => {
-     axios.get('http://localhost:3001/pets/list')
+     axios.get('http://54.179.9.102:3001/pets/list')
       .then(resp => {
         const data = resp.data;
         const jsonResult = Object.entries(data);
-        console.log(jsonResult)
-
         setPets(jsonResult);
 
       })
@@ -53,7 +51,7 @@ export default function App() {
   const handleDeleteModal = () => {
     const id = deletePet.id
     setDeleteModal(false);
-    axios.delete(`http://localhost:3001/pets/delete/${id}`).then((response) => {
+    axios.delete(`http://54.179.9.102:3001/pets/delete/${id}`).then((response) => {
       if (response.status === 200) {
         fetchData()
         setDeletePet({})
