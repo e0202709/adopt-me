@@ -13,11 +13,20 @@ export default function App() {
   const [deletePet, setDeletePet] = useState({});
   const [addOrEditAction, setAddOrEditAction] = useState("");
 
-  const fetchData = async () => {
-    const allPets = await fetch("http://student-6.sutdacademytools.net:3001/pets/list")
-    const res = await allPets.json()
-    const jsonResult = Object.entries(res);
-    setPets(jsonResult);
+
+  const fetchData = () => {
+     axios.get('http://student-6.sutdacademytools.net:3001/pets/list')
+      .then(resp => {
+        const data = resp.data;
+        const jsonResult = Object.entries(data);
+        console.log(jsonResult)
+
+        setPets(jsonResult);
+
+      })
+      .catch(err => {
+        console.error(err);
+      });
   };
 
   useEffect(() => {

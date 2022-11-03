@@ -38,6 +38,7 @@ function ModalForm(props) {
           if (response.status === 200) {
           }
           getData()
+          // window.location.reload(false);
         })
         .catch((err) => console.error(err));
     } else {
@@ -47,6 +48,7 @@ function ModalForm(props) {
       ).then((response) => {
         if (response.status === 200) {
           getData()
+          // window.location.reload(false);
         }
       })
         .catch((err) => console.error(err));
