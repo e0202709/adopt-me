@@ -6,7 +6,7 @@ import "./formStyles.css";
 import axios from "axios";
 
 function ModalForm(props) {
-  const { openModal, addOrEdit, editedRecord, handleEditClose, getData } =
+  const { openModal, addOrEdit, editedRecord, handleEditClose, setNewData } =
     props;
 
   useEffect(() => {
@@ -36,19 +36,22 @@ function ModalForm(props) {
       axios.post(`http://54.179.9.102:3001/pets/addpet`, getValues("record"))
         .then((response) => {
           if (response.status === 200) {
+            const data = response.data;
+            const jsonResult = Object.entries(data);
+            setNewData(jsonResult);
           }
-          getData()
-          // window.location.reload(false);
         })
         .catch((err) => console.error(err));
+
     } else {
       axios.put(
         `http://54.179.9.102:3001/pets/${editedRecord.id}`,
         getValues("record")
       ).then((response) => {
         if (response.status === 200) {
-          getData()
-          // window.location.reload(false);
+          const data = response.data;
+          const jsonResult = Object.entries(data);
+          setNewData(jsonResult);
         }
       })
         .catch((err) => console.error(err));

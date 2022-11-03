@@ -31,6 +31,10 @@ export default function App() {
     fetchData();
   }, []);
 
+  const updateData = (jsonResult) => {
+    setPets(jsonResult);
+  }
+
   const showEditModal = (pet, id) => {
     setShowModal(true);
     pet.id = id;
@@ -53,7 +57,9 @@ export default function App() {
     setDeleteModal(false);
     axios.delete(`http://54.179.9.102:3001/pets/delete/${id}`).then((response) => {
       if (response.status === 200) {
-        fetchData()
+        const data = response.data;
+        const jsonResult = Object.entries(data);
+        setPets(jsonResult);
         setDeletePet({})
       }
     })
@@ -112,7 +118,7 @@ export default function App() {
           addOrEdit={addOrEditAction}
           handleEditClose={closeModal}
           editedRecord={editPet}
-          getData={fetchData}
+          setNewData = {updateData}
         />
       </Grid>
       <Dialog
