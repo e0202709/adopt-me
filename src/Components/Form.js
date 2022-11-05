@@ -33,7 +33,7 @@ function ModalForm(props) {
   const handleSubmitForm = () => {
     handleEditClose();
     if (addOrEdit === "Add") {
-      axios.post(`http://54.179.9.102:3001/pets/addpet`, getValues("record"))
+      axios.post(`http://localhost:3001/pets/addpet`, getValues("record"))
         .then((response) => {
           if (response.status === 200) {
             const data = response.data;
@@ -45,7 +45,7 @@ function ModalForm(props) {
 
     } else {
       axios.put(
-        `http://54.179.9.102:3001/pets/${editedRecord.id}`,
+        `http://localhost:3001/pets/${editedRecord.id}`,
         getValues("record")
       ).then((response) => {
         if (response.status === 200) {
