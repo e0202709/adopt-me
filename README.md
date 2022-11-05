@@ -1,70 +1,57 @@
-# Getting Started with Create React App
+## System Requirements
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+* Ubuntu 22.04 EC2 instance
+* [Docker Engine](https://docs.docker.com/engine/install/ubuntu/)
+* [Node v16.18](https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-ubuntu-20-04)
+* Optional [NVM](https://tecadmin.net/how-to-install-nvm-on-ubuntu-20-04/)
+* [Nginx](https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-ubuntu-20-04) for reverse proxy
 
-## Available Scripts
+## Pre-Requistes
+Ensure you have [adopt-me-backend](https://github.com/e0202709/adopt-me-backend) up and running
 
-In the project directory, you can run:
 
-### `npm start`
+## Setup
+Connect to the EC2 instance (it should look like ubuntu22-sutd-student-6) either via SSH or using the AWS console directly
+Change directory into your nginx file, it is either located in paths: /usr/local/nginx/conf , /etc/nginx , or /usr/local/etc/nginx .
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+run 
+```
+/etc/nginx
+```
+run 
+```
+sudo nano default
+```
+add these lines into the nginx config file
+```
+   location / {
+                proxy_pass http://localhost:3000;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header Host $host;
+                proxy_redirect off;
+        }
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+```
+Save and exit by `Ctrl-O` and `Ctrl-X`
 
-### `npm test`
+Clone this repo into a fresh Ubuntu 22.04 EC2 instance
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+run 
+``` 
+cd adopt-me
+```
 
-### `npm run build`
+run
+```
+docker build -t adopt-me .
+```
+to build a new container image
+and all relevant dependencies will be installed automatically in the container environment
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Start your container using by running the command
+`docker run -dp 3000:3000 adopt-me-backend`
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Viola!
+To test that your backend application is up and running, visit http://student-6.sutdacademytools.net to view it in your browser.
