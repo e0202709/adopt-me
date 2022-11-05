@@ -16,7 +16,7 @@ Change directory into your nginx file, it is either located in paths: /usr/local
 
 run 
 ```
-/etc/nginx
+/etc/nginx/sites-enabled
 ```
 run 
 ```
@@ -24,13 +24,17 @@ sudo nano default
 ```
 add these lines into the nginx config file
 ```
-   location / {
-                proxy_pass http://localhost:3000;
+server {
+        listen 3000;
+        server_name student-6.sutdacademytools.net;
+        location / {
+                proxy_pass http://student-6.sutdacademytools.net:3000/;
                 proxy_set_header X-Real-IP $remote_addr;
                 proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
                 proxy_set_header Host $host;
-                proxy_redirect off;
+
         }
+}
 
 ```
 Save and exit by `Ctrl-O` and `Ctrl-X`
@@ -51,7 +55,7 @@ and all relevant dependencies will be installed automatically in the container e
 
 
 Start your container using by running the command
-`docker run -dp 3000:3000 adopt-me-backend`
+`docker run -dp 3000:3000 adopt-me`
 
 ## Viola!
 To test that your backend application is up and running, visit http://student-6.sutdacademytools.net to view it in your browser.
